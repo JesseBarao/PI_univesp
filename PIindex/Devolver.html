@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Livros Indisponíveis</title>
+    <link rel="stylesheet" href="Estilo.css">
+</head>
+
+<body>
+    <div>
+        <div id="lateral">
+            <ul class="linklateral">
+                <li><a href="CadastroLivro.html">Cadastro Livro</a></li>
+                <li><a href="CadastroAluno.php">Cadastro Aluno</a></li>
+                <li><a href="ConsultaLivro.html">Consulta Livro</a></li>
+                <li><a href="ConsultaAluno.php">Consulta Aluno</a></li>
+                <li><a href="Index.html">Home</a></li>
+                <li><a href="Emprestimo.html">Emprestimo</a></li>
+                <li><a href="Devolver.html">Devolução</a></li>
+            </ul>
+        </div>
+
+        <div id="principal">
+            <h3>Livros Indisponíveis</h3>
+
+            <!-- Campos de busca -->
+            <div id="barraBusca">
+                <input type="number" id="buscaTombo" name="buscaTombo" placeholder="Buscar por Tombo..." oninput="buscarLivros()">
+                <input type="text" id="buscaTitulo" name="buscaTitulo" placeholder="Buscar por Título..." oninput="buscarLivros()">
+                <input type="number" id="buscaPosse" name="buscaPosse" placeholder="Buscar por Posse..." oninput="buscarLivros()">
+            </div>
+
+            <!-- Área para exibir os livros -->
+            <div id="paragrafoLivros"></div>
+        </div>
+
+        <!-- Modal para confirmação de devolução -->
+        <div id="modalDevolucao" style="display: none;">
+            <div class="modal-content">
+                <h3>Confirmar Devolução</h3>
+                <p>Deseja efetuar a devolução deste livro?</p>
+                <textarea id="observacoes" placeholder="Observações (opcional)"></textarea>
+                <button onclick="confirmarDevolucao()">Confirmar</button>
+                <button onclick="fecharModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Função para buscar livros com base nos critérios de busca
+        function buscarLivros() {
+            // Obtém os valores dos campos de busca
+            const tombo = document.getElementById('buscaTombo').value;
+            const titulo = document.getElementById('buscaTitulo').value;
+            const posse = document.getElementById('buscaPosse').value;
+
+            // Cria uma URL com os parâmetros de busca
+            const params = new URLSearchParams({
+                tombo: tombo,
+                titulo: titulo,
+                posse: posse
+            });
+
+            // Envia uma requisição AJAX para buscar livros
+            fetch(`buscar_livros_indisponiveis.php?${params}`)
+                .then(response => response.json())
+                .then(livros => {
+                    const paragrafoLivros = document.getElementById('paragrafoLivros');
+                    let conteudoLivros = '';
+
+                    if (livros.length > 0) {
+                        conteudoLivros = '<ul>';
+                        livros.forEach(livro => {
+                            conteudoLivros += `<li>`;
+                            conteudoLivros += `Tombo: ${livro.Tombo}<br>`;
+                            conteudoLivros += `Título: ${livro.Titulo}<br>`;
+                            conteudoLivros += `Posse: ${livro.Posse}<br>`;
+                            conteudoLivros += `<button onclick="abrirModalDevolucao(${livro.Tombo})">Devolver</button>`;
+                            conteudoLivros += `</li>`;
+                        });
+                        conteudoLivros += '</ul>';
+                    } else {
+                        conteudoLivros = 'Nenhum livro encontrado com os critérios especificados.';
+                    }
+
+                    paragrafoLivros.innerHTML = conteudoLivros;
+                })
+                .catch(error => {
+                    console.error('Erro ao buscar livros:', error);
+                    document.getElementById('paragrafoLivros').textContent = 'Erro ao buscar livros indisponíveis.';
+                });
+        }
+
+        // Função para abrir o modal de devolução com base no tombo do livro
+        function abrirModalDevolucao(tomboLivro) {
+            // Salva o tombo do livro para usar na confirmação da devolução
+            window.tomboAtual = tomboLivro;
+
+            // Exibe o modal
+            document.getElementById('modalDevolucao').style.display = 'block';
+        }
+
+        // Função para confirmar a devolução do livro
+        function confirmarDevolucao() {
+            const observacoes = document.getElementById('observacoes').value;
+
+            // Envia uma requisição AJAX para atualizar o estado do livro no servidor
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', 'confirmar_devolucao.php', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+            // Define os dados a serem enviados na requisição
+            const dados = `tombo=${window.tomboAtual}&observacoes=${encodeURIComponent(observacoes)}`;
+
+            // Função de retorno de chamada para lidar com a resposta do servidor
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    alert('Devolução confirmada com sucesso!');
+                    fecharModal();
+                    buscarLivros();
+                } else {
+                    alert('Erro ao confirmar devolução. Por favor, tente novamente.');
+                }
+            };
+
+            // Envia a requisição com os dados
+            xhr.send(dados);
+        }
+
+        // Função para fechar o modal de devolução
+        function fecharModal() {
+            document.getElementById('modalDevolucao').style.display = 'none';
+            document.getElementById('observacoes').value = ''; // Limpa o campo de observações
+        }
+
+        // Carrega os livros indisponíveis ao carregar a página
+        window.addEventListener('load', function() {
+            buscarLivros();
+        });
+    </script>
+</body>
+</html>
