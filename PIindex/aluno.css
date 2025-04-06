@@ -1,0 +1,63 @@
+/* Personalizando a Navbar */
+.navbar {
+    background-color: #343a40; /* Alterar a cor de fundo da navbar */
+}
+
+.navbar-brand {
+    color: #fff; /* Cor da marca (nome da biblioteca) */
+    text-align: justify;
+}
+
+.navbar-nav .nav-link {
+    color: #d4d4d4; /* Cor dos links */
+}
+
+.navbar-nav .nav-link:hover {
+    color: #f8f9fa; /* Cor dos links ao passar o mouse */
+}
+
+/* Personalizando os cartões */
+.card {
+    border-radius: 15px; /* Deixando as bordas dos cartões arredondadas */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adicionando sombra aos cartões */
+}
+
+.card-title {
+    font-size: 1.5rem; /* Aumentando o tamanho do título */
+    color: #007bff; /* Mudando a cor do título */
+}
+
+.card-body p {
+    font-size: 1.1rem; /* Aumentando o tamanho do texto dentro dos cartões */
+}
+
+/* Estilo dos botões */
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #004085;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+}
+
+/* Rodapé */
+footer {
+    background-color: #f8f9fa;
+    color: #6c757d;
+}
+
+footer p {
+    margin: 0;
+}
